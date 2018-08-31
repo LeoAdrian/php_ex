@@ -1,0 +1,207 @@
+html, body {
+    height:100%;
+}
+body {
+    width:70%;
+    margin:0 auto;
+}
+.login-err {
+    position: absolute;
+    color:red;
+    width:30%;
+    height:200px;
+    text-align:center;
+    margin:0;
+    left:50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    border:1px solid black;
+    border-radius: 10px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    font-size:20px;
+    background-color:white;
+    transition: opacity 1s ease-in-out;
+}
+.login-err button{
+    position:absolute;
+    background-color: transparent;
+    border:3px solid rgb(43, 159, 226);
+    top:75%;
+    font-size:18px;
+    color:rgb(43, 159, 226);
+    width:150px;
+    height:30px;
+    border-radius: 8px;
+}
+.login-err button:hover{
+    cursor:pointer;
+    opacity: .8;
+}
+.user-list {
+    /* border: 1px solid black; */
+    display:flex;
+    flex-direction: column;
+}
+.user {
+    flex-basis:50px;
+    display:flex;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size:20px;
+    border: 1px solid black;
+    border-top:none;
+}
+.user-list-header {
+    background-color: #555;
+    border-top: 1px solid black;
+    color:white;
+}
+.user:nth-of-type(even){
+    /* background-color: #95E8AE; */
+    background-color: #f1f1f1;
+    /* color:white; */
+}
+.user input[type="submit"]{
+    /* background-color: red; */
+    color:white;
+}
+.user form:hover{
+    /* background-color: red; */
+    opacity:.8;
+}
+.user input[type="submit"]:focus{
+    outline: none;
+}
+.user span {
+    flex-basis:50%;
+}
+.buttons-container {
+    display:flex;
+    justify-content: space-evenly;
+    flex-basis:20%;  
+}
+.buttons-container input[type="submit"] {
+    border:none;
+    background:transparent;
+}
+.buttons-container input[type="submit"]:hover {
+    cursor:pointer;
+}
+.right-side-details {
+    /* border-left:1px solid black; */
+    padding:10px 10px;
+    text-align: center;
+}
+.view-user-container {
+    display:flex;
+    flex-direction: column;
+    position: relative;
+}
+.left-side-details {
+    text-align:center;
+    width:10px;
+}
+.line {
+    /* width: 100%; */
+    /* border: 3px solid red; */
+    position: absolute;
+    /* top: 50%; */
+    /* transform: rotate(90deg); */
+    height: 93%;
+    width: 2px;
+    background: #555;
+    bottom: 0;
+    left: 50%;
+}
+.landing {
+    position:relative;
+    top:50%;
+    transform:translateY(-50%);
+}
+.landing .buttons-container form {
+    border:3px solid orange;
+    display:flex;
+    align-items:center;
+    background: transparent;
+    padding: 3px;
+    border-radius:15px;
+}
+.landing .buttons-container form * {
+    color:orange;
+}
+.landing .buttons-container form:nth-of-type(1) {
+    /* background: #56da7e; */
+    border: 3px solid #56da7e;
+}
+.landing .buttons-container form:nth-of-type(1) * {
+    color: #56da7e;
+}
+.buttons-container .fa {
+    display:flex;
+    padding-left:5px;
+}
+.view-user-container {
+    position:relative;
+    top:50%;
+    transform:translateY(-50%);
+}
+.logout-form{
+    text-align:right;
+    position:relative;
+    bottom:3px;
+}
+.logout-form input[type="submit"]:hover{
+    cursor:pointer;
+    background-color: #7397BB;
+    opacity:.9;
+    color:white;
+}
+.logout-form input[type="submit"]{
+    border: 3px solid #7397BB;
+    padding: 5px 15px;
+    border-radius: 10px;
+    background-color: white;
+    color: #7397BB;
+    font-size: 16px;
+}
+.logout-form input[type="submit"]:focus {
+    outline:none;
+}
+.hover-form-view {
+    background-color: red;
+}
+.hover-form-edit {
+    background-color: orange;
+}
+
+/* EDIT USER PAGE */
+.edit-form {
+    display:flex;
+    /* flex-direction:column; */
+    flex-wrap:wrap;
+}
+
+.edit-form-unit {
+    display:flex;
+    flex-direction:column;
+    padding:10px;
+}
+.edit-form-unit label {
+    padding-bottom: 4px;
+}
+.edit-form-unit input {
+    padding-bottom: 4px;
+}
+.edit-form .edit-form-btns {
+    display:flex;
+    align-self: flex-end;
+    position: relative;
+    left: 10%;
+    flex-basis:30%;
+    justify-content: space-around;
+}
+.edit-form input[type="submit"]:hover {
+    cursor:pointer;
+}
