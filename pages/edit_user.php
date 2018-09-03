@@ -34,7 +34,6 @@
   include_once '../utils/util.php';
   include_once '../../config/app_config.php';
   session_start();
-
   // set_error_handler (
   //   function($errno, $errstr, $errfile, $errline) {
   //       throw new ErrorException($errstr, $errno, 0, $errfile, $errline);     
@@ -42,14 +41,17 @@
   // ); 
   try {
     Utils::checkLogin();
-    var_dump($_GET);
-    var_dump($_SESSION);
-    echo gettype($_GET["user_id"]);
-    echo '<br>';
-    echo empty($_GET);
+    // var_dump($_SESSION);
+    // echo gettype($_GET["user_id"]);
+    // echo '<br>';
+    // echo empty($_GET);
     $userID = $_GET["user_id"] ?: $_SESSION['pass_id_on_update_error'];
     // Message to be desplayed if something goes wrong
-    $update_err_msg = $_SESSION['update_err'];
+    $update_err_msg = $_SESSION['update_err'] ?: '';
+    if($_SESSION){
+      unset($_SESSION['update_err']);
+    // If user gets error and its id stored in the session is assigned, remove it from the collection 
+    }
     $mysqli = new mysqli($gc_mysql_ip, $gc_mysql_user, $gc_mysql_password, $gc_mysql_database);
     $edit_form_content = '';
     $edit_user_query = $mysqli->query("
@@ -64,8 +66,9 @@
                                       WHERE id = " . $userID);
     foreach($edit_user_query as $obj) {
       foreach($obj as $key=>$value){
-        // echo $prop;
-        echo '<br>';
+        // echo $key . '<br>';
+        // echo $key == 'phone_number' ?: 'None' . '<br>';
+        // echo '<br>';
         if($key == 'id') {
           $edit_form_content .= '<input type="hidden" name="edit-values-id" value="'. $value .'">';
           continue;
@@ -74,9 +77,21 @@
           $edit_form_content .= 
           '<div class = "edit-form-unit">' 
             .
-            '<label for=' . $key . '>'. $key .'</label>'
+            '<label for=' . $key . '>'. Utils::formatStr($key) .'</label>'
             .
             '<input required type="password" placeholder="Insert new password" . name = ' . $key . ' >'
+            .
+          '</div>';
+          continue;
+        }
+        if($key == 'phone_number') {
+          $formated_tel = preg_replace('/(\d{4})(\d{3})(\d{3})/', '${1}-${2}-${3}', $value);
+          $edit_form_content .= 
+          '<div class = "edit-form-unit">' 
+            .
+            '<label for=' . $key . '>'. Utils::formatStr($key) .'</label>'
+            .
+            '<input required type="tel" pattern="[0-9]{4}-[0-9]{3}-[0-9]{3}" ' . 'value= ' . $formated_tel . ' name = ' . $key . ' >'
             .
           '</div>';
           continue;
@@ -84,9 +99,9 @@
         $edit_form_content .= 
           '<div class = "edit-form-unit">'
             .
-            '<label for=' . $key . '>'. $key .'</label>'
+            '<label for=' . $key . '>'. Utils::formatStr($key) .'</label>'
             .
-            '<input type="text" value = ' . $value . ' name = ' . $key . '>'
+            '<input type="text" value = ' . '"' . $value . '"' . ' name = ' . $key . '>'
             .
           '</div>';
 
@@ -105,20 +120,32 @@
   <link rel="stylesheet" href="../assets/css/landing.css">
 </head>
 <body>
-  <div class="update-err">
-    <?php 
-      echo $update_err_msg;
-    ?>
-  </div>
-  <h1>Edit User</h1>
-  <form method="POST" action="../controllers/main_controller.php" class="edit-form">
-    <?php 
-      echo $edit_form_content;
-    ?>
-    <div class="edit-form-btns">
-      <input type="submit" value="Save Changes">
-      <input type="reset" value="Reset Changes">
+    <div class="login-err update-msg">
+      <?php
+        echo $update_err_msg;
+      ?>
     </div>
-  </form>
+    <!-- <h1>Edit User</h1> -->
+    <div class="edit-space">
+      <img src="https://www.zipformplus.com/css/images/UserProfileGray.fw.jpg" alt="user image">
+      <form method="POST" action="../controllers/main_controller.php" class="edit-form">
+        <?php 
+          echo $edit_form_content;
+        ?>
+        <div class="edit-form-btns">
+          <input type="submit" value="Save Changes">
+          <input type="reset" value="Reset Changes">
+        </div>
+      </form>
+    </div>
+  <script>
+    const update_err_block = document.querySelector('.update-msg');
+    console.log(update_err_block);
+    if(!update_err_block.innerText){
+      update_err_block.style.display = 'none';
+    }
+    // Hide error message after 2 seconds
+    setTimeout(() => update_err_block.style.display = 'none', 2000);
+  </script>
 </body>
 </html>

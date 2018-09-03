@@ -29,11 +29,11 @@
   //   header('Location: ' . '../index.php');
   // }
   Utils::checkLogin();
-
   //Check to see if the user just logged in
   $messageToBeDisplayed = '';
   if($_SESSION['loggedIn'] == TRUE && $_SESSION['first-conn'] == TRUE && isset($_SESSION['first-name'])){
     $messageToBeDisplayed = 'Welcome Back, ' . $_SESSION['first-name'] . '!';
+    // $navInfo .= '<div class="nav-first-name">'. $_SESSION['first-name'] .'</div>';
     // Change the boolean to false in order for the welcome message to dissapear
     $_SESSION['first-conn'] = FALSE;
     // Delete first name prop from the session object
@@ -43,9 +43,9 @@
   // if($_SESSION['count'] == 2){
   //   $_SESSION['count'] = 2;
   // };
+  // echo $_SESSION['first-name'];
   $mysqli = new mysqli($gc_mysql_ip, $gc_mysql_user, $gc_mysql_password, $gc_mysql_database);
   $allUsersQuery = $mysqli->query("SELECT first_name,id FROM users");
-  
   //Generate the user table by appending every user to the same string
   $allUsersTable = '';
   // Go through all the props of the user returned above
@@ -59,7 +59,7 @@
             </i>
         </form>'
         .
-        '<form class="edit-form" method = "GET" action="../controllers/main_controller.php">
+        '<form class="edit-form-btn" method = "GET" action="../controllers/main_controller.php">
             <input type="hidden" name="change-to-edit-user" value=' . '"' .$value['id'] . '"' . '>
           <i class = "fa fa-edit">
             <input type="submit" value="edit">
@@ -70,6 +70,18 @@
     '</div>';
   };
   $mysqli->close();
+
+  // If update was successful, store session variable in a normal var to be used in the html code
+  $update_succ = $_SESSION['update_succ'] ?: '';
+  if($_SESSION['update_succ']){
+    unset($_SESSION['update_succ']);
+  };
+  // After the update is done we can remove the id stored in the session
+  // for the purpose of keeping the form intact
+  if($_SESSION['pass_id_on_update_error']){
+    unset($_SESSION['pass_id_on_update_error']);
+  }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -79,10 +91,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+  <nav>
+    <div class="nav-img">
+      <img src="https://www.zipformplus.com/css/images/UserProfileGray.fw.jpg" alt="nav img" width="35" height="35">
+    </div>
+    <?php
+      echo '<div class="nav-username">'. $_SESSION['nav-fn'] . ' ' . $_SESSION['nav-ln'] .'</div>';
+    ?>
+  </nav>
   <div class="landing">
     <div class="login-err-msg" >
         <?php
-          echo $messageToBeDisplayed;
+          echo $messageToBeDisplayed ?: $update_succ;
         ?>
     </div>
     <!-- <h1 class="landing-title">Landing Page</h1> -->

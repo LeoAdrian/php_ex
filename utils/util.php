@@ -15,5 +15,9 @@ class Utils {
             header('Location: ' . '../index.php');
           }
     }
+    public static function formatStr($str){
+        // Split string into array and then unite the words by using 1 space char between them
+        return ucwords(implode(" ", explode('_',$str)));
+    }
 }
 ?>

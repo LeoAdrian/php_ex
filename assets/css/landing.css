@@ -178,9 +178,18 @@ body {
 
 /* EDIT USER PAGE */
 .edit-form {
-    display:flex;
+    /* 1-3-5 */
+    /* display:flex; */
     /* flex-direction:column; */
-    flex-wrap:wrap;
+    /* flex-wrap:wrap; */
+    /* height:500px; */
+    /* flex-basis:50%; */
+
+
+    display: flex;
+    flex-direction: column;
+    height: 550px;
+    flex-basis: 50%;
 }
 
 .edit-form-unit {
@@ -192,16 +201,85 @@ body {
     padding-bottom: 4px;
 }
 .edit-form-unit input {
-    padding-bottom: 4px;
+    /* padding-bottom: 4px; */
+    padding:10px;
+    padding-right:0;
+    border:1px solid black;
+    border-radius:5px;
+    font-size:16px;
+}
+.edit-form-unit:first-of-type {
+    padding-top:0;
+}
+.edit-form-unit input:focus  {
+    box-shadow: 0 0 1pt 1pt #7397BB;
+    outline:none;
+}
+.edit-form-unit label {
+    font-weight:bold;
 }
 .edit-form .edit-form-btns {
-    display:flex;
+    /* display:flex;
     align-self: flex-end;
     position: relative;
-    left: 10%;
-    flex-basis:30%;
-    justify-content: space-around;
+    flex-basis:5%;
+    justify-content: space-around; */
+    display: flex;
+    /* align-self: flex-end; */
+    position: relative;
+    /* left: 10%; */
+    /* flex-basis: 5%; */
+    justify-content: center;
+    right: 50%;
+    transform: translateX(50%);
+    /* width: 100px; */
 }
-.edit-form input[type="submit"]:hover {
+.edit-form-btns * {
+    margin:10px;
+    margin-bottom:0;
+    border: 3px solid #7397BB;
+    padding: 5px 15px;
+    border-radius: 10px;
+    background-color: white;
+    color: #7397BB;
+    font-size: 16px;
+    font-weight: bolder;
+}
+.edit-form-btns *:hover{
     cursor:pointer;
+    background-color: #7397BB;
+    opacity:.9;
+    color:white;
+}
+.edit-form input[type="submit"]:hover, input[type="reset"]:hover {
+    cursor:pointer;
+}
+/* .update-err {
+    width:200px;
+    height:200px;
+    background:red;
+} */
+.edit-space {
+    display:flex;    
+    align-items: flex-start;
+    justify-content: space-evenly;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+nav {
+    width:100%;
+    background-color:#7397BB;
+    position:absolute;
+    top:0;
+    left:0;
+    display:flex;
+    justify-content: flex-end;
+}
+nav div {
+    padding: 10px;
+}
+.nav-username {
+    color:white;
+    align-self:center;
 }

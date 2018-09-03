@@ -43,15 +43,15 @@
 */
   include_once '../../config/app_config.php';
   session_start();
+  // Display errors
+  ini_set('display_errors', 'On');
 // MySQL connection
   $mysqli = new mysqli($gc_mysql_ip, $gc_mysql_user, $gc_mysql_password, $gc_mysql_database);
-  // foreach($password_query as $pass_hash){
-  //   var_dump($pass_hash["password_hash"]);
-  // }
-  var_dump($mysqli);
-  $conn_err = mysqli_error() ?: $mysqli->connect_error;
+  // $link = mysqli_connect($gc_mysql_ip, $gc_mysql_user, $gc_mysql_password, $gc_mysql_database);
+
+  $conn_err = $mysqli->error ?: $mysqli->connect_error;
   if(is_null($mysqli->error) || !empty($mysqli->error) ) {
-    die('Could not connect: ' . $conn_err);
+    die('Could not establish database connection: ' . $conn_err);
   } else {
     echo 'Connected successfully<br>';
   }
@@ -102,6 +102,7 @@
             self::logout();
           }
           if(!empty($_POST['edit-values-id'])){
+            echo "<br>Update user request<br>";
             self::updateUser($_POST);
           }
           break;
@@ -120,13 +121,15 @@
       $sentPass = $_POST['password'];
       $client_hash = md5($sentPass . '_pepper');
       // Retrieve the password hash for the entered email 
-      $password_query = $mysqli->query("SELECT first_name, password_hash FROM users WHERE email = " . '"' . $sentUser . '"');
-      $db_hash = '';
-      $db_first_name = '';
+      $password_query = $mysqli->query("SELECT first_name, password_hash, last_name FROM users WHERE email = " . '"' . $sentUser . '"');
+      $db_hash = NULL;
+      $db_first_name = NULL;
+      $db_user_id = NULL;
 
       foreach($password_query as $field){
         $db_hash = $field["password_hash"];
         $db_first_name = $field["first_name"];
+        $db_last_name = $field["last_name"];
       };
 
       echo 'Password is: ';
@@ -140,6 +143,8 @@
         // If both values are correct then the user is redirected to landing page
         $_SESSION['loggedIn'] = TRUE;
         $_SESSION['first-conn'] = TRUE;
+        $_SESSION['nav-fn'] = $db_first_name;
+        $_SESSION['nav-ln'] = $db_last_name;
         //Also store the name of the user in order to greet him the first time he logs in
         $_SESSION['first-name'] = $db_first_name;
         self::redirect('../pages/landing_page.php');
@@ -160,12 +165,14 @@
       self::redirect('../index.php');
     }
     private static function updateUser($new_info) {
+      global $mysqli;
+      var_dump($new_info);
       // Construct the string that will contain what comes after set in the mysql query
-      set_error_handler (
-        function($errno, $errstr, $errfile, $errline) {
-            throw new ErrorException($errstr, $errno, 0, $errfile, $errline);     
-        } 
-      );
+      // set_error_handler (
+      //   function($errno, $errstr, $errfile, $errline) {
+      //       throw new ErrorException($errstr, $errno, 0, $errfile, $errline);     
+      //   } 
+      // );
       // try {
         $string_col_val = '';
         foreach($new_info as $key=>$prop){
@@ -179,31 +186,47 @@
           $prop = md5($prop . '_pepper');
           // echo "New password: " . $prop;
         }
-        $string_col_val .= $key . '=' . '"'. $prop . '"' . ', ';
-        if (end($new_info) == $key) {
-          $string_col_val .= $key . '=' . '"'. $prop . '"' . ' ';
+        if($key == 'phone_number'){
+          //Get phone number from the client and format it in order for mysql to accept it
+          $temp = preg_split('/-/', $prop);
+          $prop = join('', $temp);
         }
-      };
+        // If we get to the last value in the array, don't put comma after the word
+        if (end($new_info) == $prop) {
+          $string_col_val .= $key . '=' . "'". $prop . "'" . ' ';
+          continue;
+        }
 
-      // $update_query = $mysqli->query("UPDATE user" . " SET " . "first_name = '"'ROBIN'"' " . " WHERE email = robin_jackman@mysite.com");
-      // $update_query = $mysqli->query("UPDATE user SET first_name = 'sss'  WHERE email = 'robin_jackman@mysite.com'");
-      // echo $update_query;
-      $sql = "UPDATE users SET first_name='Doe' WHERE email='robin_jackman@mysite.com'";
-      if ($mysqli->query($sql) == true) {
-        echo "Record updated successfully";
-     } else {
-        echo "Error updating record: " . mysqli_error($conn);
-     }
-      echo "<br>Update function";
-      // echo $string_col_val;
+        $string_col_val .= $key . '=' . "'". $prop . "'" . ', ';
+        
+        };
+        // echo $update_query;
+        $update_query = $mysqli->query("UPDATE users SET " . $string_col_val .  " WHERE id= " . "'" . $new_info["edit-values-id"] . "'");
+
+        // Check how many rows are affected by the query
+        // in order to determine if it's an overwrite or if the query is incorect
+        preg_match('/Rows matched: (\d)/', $mysqli->info, $matches);
+        var_dump($matches);
+        // echo preg_matc($mysqli->info)
+        if($update_query === TRUE && $matches[1] > 0){
+          echo "Update successful";
+          $_SESSION['update_succ'] = "Update was successful!";
+          self::redirect('../pages/landing_page.php');
+        } else {
+          $_SESSION['update_err'] = $mysqli->error ?: "Could not update data!";
+          $_SESSION['pass_id_on_update_error'] = $new_info['edit-values-id'];
+          echo $_SESSION['update_err'];
+          // self::redirect('../pages/edit_user.php');
+        }
+        //Redirect user to landing page on success
       // }
       // catch(Exception $e){
-      //   $_SESSION['update_err'] = "Something went wrong.Please try to update again!";
-      //   $_SESSION['pass_id_on_update_error'] = $new_info['edit-values-id'];
-      //   echo "Something went wrong <br> " . $new_info['edit-values-id'];
-      //   // self::redirect('../pages/edit_user.php');
-      //   // header('Location: ../index.php');
-      //   // header('Location: ../pages/edit_user.php');
+        // $_SESSION['update_err'] = "Something went wrong.Please try to update again!";
+        // $_SESSION['pass_id_on_update_error'] = $new_info['edit-values-id'];
+        // echo "Something went wrong <br> " . $new_info['edit-values-id'];
+        // self::redirect('../pages/edit_user.php');
+        // header('Location: ../index.php');
+        // header('Location: ../pages/edit_user.php');
       // }
     }
     private static function redirect($loc, $param=''){

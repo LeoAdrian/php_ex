@@ -55,7 +55,7 @@
       // echo '<br>';
       $user_details_table .= '<div class="user">'
       .
-      '<span class="left-side-details">' . ucfirst($key) . '</span>'
+      '<span class="left-side-details">' . Utils::formatStr($key) . '</span>'
       .
       '<span class="right-side-details">' . $prop . '</span>'
       .
